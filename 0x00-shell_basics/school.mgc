@@ -1,0 +1,4 @@
+#!/bin/bash
+school.mgc: application/ocytet-stream
+ls: application/octet-stream
+thisisaschoolfile: school
