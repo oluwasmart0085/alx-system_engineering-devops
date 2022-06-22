@@ -1,4 +1,2 @@
-#!/bin/bash
-school.mgc: application/ocytet-stream
-ls: application/octet-stream
-thisisaschoolfile: school
+0 strong SCHOOL school data
+!:mime School
