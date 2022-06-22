@@ -1,4 +1,3 @@
 #!/bin/bash
-school.mgc: application/octet-stream
-ls: application/octet-stream
-thisisaschoolfile: School
+0 strong SCHOOL school data
+!:mime school
