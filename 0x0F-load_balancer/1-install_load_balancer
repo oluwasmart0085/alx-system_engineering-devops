@@ -1,10 +1,42 @@
 #!/usr/bin/env bash
-#Config NGINX server with custom header response
-sudo apt-get -y update
-sudo apt-get -y install nginx
-echo "ubuntu" | sudo tee /var/www/html/index.nginx-debian.html
-sudo sed -i '/^\sserver_name.*/a \        rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
-sudo sed -i '/^\slocation.*/i \        add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
-sudo sed -i '/^\slocation.*/i \        error_page 404 /custom_404.html;' /etc/nginx/sites-available/default
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/custom_404.html
-sudo service nginx start
+# Installs HAProxy version 1.8 with the following configurations:
+#+    Enables management via the init script.
+#+    Distributes requests using a round-robin algorithm.
+
+apt-get install -y software-properties-common
+add-apt-repository -y ppa:vbernat/haproxy-2.0
+apt-get update
+apt-get install -y haproxy=2.0.\*
+
+echo "ENABLED=1" >> /etc/default/haproxy
+mv /etc/haproxy/haproxy.cfg{,.original}
+touch /etc/haproxy/haproxy.cfg
+
+printf %s "global
+    log 127.0.0.1 local0 notice
+    maxconn 2000
+    user haproxy
+    group haproxy
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    retries 3
+    option redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+listen hbnb
+    bind 0.0.0.0:80
+    mode http
+    stats enable
+    stats uri /haproxy?stats
+    balance roundrobin
+    option httpclose
+    option forwardfor
+    server 77746-web-01 35.168.1.79 check
+    server 77746-web-01 18.235.249.54 check
+" >> /etc/haproxy/haproxy.cfg
+
+service haproxy start
